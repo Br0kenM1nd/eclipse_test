@@ -36,12 +36,10 @@ class Api {
     return users;
   }
 
-  Future<List<Album>> getAlbumsPreviewList(int userId) async {
-    // Can not get data, when uncomment
-
+  Future<dynamic> getAlbumsPreviewList(int userId) async {
     // If already cached, then return without internet request
-    // final albumsCache = Hive.box(API_BOX).get("albumsPreview", defaultValue: []);
-    // if (albumsCache.isNotEmpty) return albumsCache;
+    List<dynamic> albumsCache = Hive.box(API_BOX).get("albumsPreview", defaultValue: []);
+    if (albumsCache.isNotEmpty) return albumsCache;
 
     int cnt = 0;
     final response =
@@ -56,15 +54,14 @@ class Api {
       }
     }
     print('amount of albums: ${albums.length}');
-    Hive.box(API_BOX).put("albumsPreview", albums); // Cache data, but no update
+    Hive.box(API_BOX).put("albumsPreview", albums);
     return albums;
   }
 
-  Future<List<Photo>> getPreviewAlbumPhotos3(int userId) async {
-    // Can not get data, when uncomment
+  Future<dynamic> getPreviewAlbumPhotos3(int userId) async {
     // If already cached, then return without internet request
-    // final photosCache = Hive.box(API_BOX).get("photosPreview3", defaultValue: []);
-    // if (photosCache.isNotEmpty) return photosCache;
+    final photosCache = Hive.box(API_BOX).get("photosPreview3", defaultValue: []);
+    if (photosCache.isNotEmpty) return photosCache;
 
     const int idStep = 50; // for getting correct preview img, for each user
     const int albumIdStep = 10;
@@ -89,11 +86,13 @@ class Api {
     return photos;
   }
 
-Future<List<Photo>> getPreviewAlbumPhotos10(int userId) async {
-    // Can not get data, when uncomment
+Future<dynamic> getPreviewAlbumPhotos10(int userId) async {
     // If already cached, then return without internet request
-    // final photosCache = Hive.box(API_BOX).get("photosPreview10", defaultValue: []);
-    // if (photosCache.isNotEmpty) return photosCache;
+    final photosCache = Hive.box(API_BOX).get("photosPreview10", defaultValue: []);
+    if (photosCache.isNotEmpty) {
+      print('From cache, amount of photos: ${photosCache.length}');
+      return photosCache;
+    }
 
     const int idStep = 50; // for getting correct preview img, for each user
     const int albumIdStep = 10;
@@ -114,14 +113,17 @@ Future<List<Photo>> getPreviewAlbumPhotos10(int userId) async {
       }
     }
     print('amount of photos: ${photos.length}');
-    Hive.box(API_BOX).put("photosPreview10", photos); // Cache data, but no update
+    Hive.box(API_BOX).put("photosPreview10", photos);
     return photos;
   }
 
-  Future<List<Album>> getAlbumsList(int userId) async {
+  Future<dynamic> getAlbumsList(int userId) async {
     // If already cached, then return without internet request
-    // final albumsCache = Hive.box(API_BOX).get("albums", defaultValue: []);
-    // if (albumsCache.isNotEmpty) return albumsCache;
+    final albumsCache = Hive.box(API_BOX).get("albums", defaultValue: []);
+    if (albumsCache.isNotEmpty) {
+      print('From cache, amount of albums: ${albumsCache.length}');
+      return albumsCache;
+    }
 
     final response =
     await http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums'));
@@ -139,6 +141,7 @@ Future<List<Photo>> getPreviewAlbumPhotos10(int userId) async {
 
   getPhotosList(int albumId) async {
     // If already cached, then return without internet request
+    // TODO store images on device, not only the url
     final photosCache = Hive.box(API_BOX).get("photos", defaultValue: []);
     if (photosCache.isNotEmpty) return photosCache;
 
@@ -214,7 +217,8 @@ Future<List<Photo>> getPreviewAlbumPhotos10(int userId) async {
     return comments;
   }
 
-  postComment(int postId, String name, String mail, String body) async {
+  Future<void> postComment(int postId, String name, String mail, String body) async {
+      print('ok');
     try {
       var response = await http.post(Uri.parse
         ('https://jsonplaceholder.typicode.com/comments'),
@@ -235,7 +239,7 @@ Future<List<Photo>> getPreviewAlbumPhotos10(int userId) async {
       Hive.box(API_BOX).put("comments", comment); // Cache data, but no update
       // Hive.box(API_BOX).clear(); // If you want to clear cache
     } catch (e) {
-      print(e);
+      print('Gotcha $e');
     }
   }
 

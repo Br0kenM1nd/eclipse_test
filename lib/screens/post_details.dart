@@ -1,6 +1,7 @@
 import 'package:eclipse_test5/components/api.dart';
 import 'package:eclipse_test5/components/comment.dart';
 import 'package:eclipse_test5/components/post.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -47,7 +48,7 @@ class _PostDetailsState extends State<PostDetails> {
               style: ElevatedButton.styleFrom(
                 primary: Colors.black.withOpacity(0.05),
               ),
-              child: Text('Add comment'),
+              child: Text('Add comment', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),),
               onPressed: () {
                 showModalBottomSheet(
                     context: context,
@@ -90,9 +91,7 @@ class _PostDetailsState extends State<PostDetails> {
                               ),
                               child: Text('Send'),
                               onPressed: () {
-                                // if (_name != null && _mail != null && _comment != null) {
                                   Api().postComment(widget.post.id, _name, _mail, _comment);
-                                // }
                               },
                             )
                           ],
